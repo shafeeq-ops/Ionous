@@ -1,26 +1,88 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #0b0f1a;
+  --ink-2: #0a0d16;
+  --paper: #ffffff;
+  --paper-2: #f7f7f9;
+  --foreground: #e7e7ec;
+  --foreground-on-paper: #0b0f1a;
+  --muted: #8b8b95;
+  --muted-on-paper: #5a5a66;
+  --rule: #1f2330;
+  --rule-light: #e6e6ea;
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
   --color-foreground: var(--foreground);
+  --color-foreground-on-paper: var(--foreground-on-paper);
+  --color-muted: var(--muted);
+  --color-muted-on-paper: var(--muted-on-paper);
+  --color-rule: var(--rule);
+  --color-rule-light: var(--rule-light);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background: var(--ink);
+  color: var(--foreground);
+  font-family: var(--font-sans), Inter, ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+::selection {
+  background: #ffffff;
+  color: #000;
+}
+
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section-paper {
+  background: var(--paper);
+  color: var(--foreground-on-paper);
+}
+
+.section-paper .eyebrow {
+  color: var(--muted-on-paper);
+}
+
+.ornament::before {
+  content: "L⌐";
+  display: inline-block;
+  margin-right: 0.6rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.85em;
+  color: currentColor;
+  opacity: 0.45;
+  transform: translateY(-0.05em);
+}
+
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.hero-vignette {
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgba(255,255,255,0.04), transparent 60%),
+    radial-gradient(80% 50% at 50% 100%, rgba(0,0,0,0.6), transparent 70%),
+    linear-gradient(180deg, #0b0f1a 0%, #07090f 100%);
 }

@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ionous
 
-## Getting Started
+Marketing site for Ionous — infrastructure and software consultancy for enterprise space companies and warfighting organizations.
 
-First, run the development server:
+## Stack
+- **Next.js 16** (App Router, React 19, TypeScript)
+- **Tailwind v4**
+- **react-three-fiber** + **drei** + **postprocessing** (3D scenes)
+- **GSAP** (UI animation)
+- **Netlify** (hosting + Forms for contact)
 
+## Develop
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Open http://localhost:3000
+
+## Build
+```bash
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy (Netlify)
+1. Connect this repo to a new Netlify site.
+2. Netlify reads `netlify.toml` — build command and the Next.js runtime plugin are pre-configured.
+3. The contact form uses **Netlify Forms** (`data-netlify="true"`); submissions appear in the Netlify dashboard once deployed.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 3D models
+The capability cards render `.glb` files from `public/models/` when present, and fall back to procedural geometry when missing. Expected files:
+- `public/models/space-infrastructure.glb`
+- `public/models/mission-systems.glb`
+- `public/models/enterprise-integration.glb`
+- `software-engineering` intentionally stays procedural (orbital network mesh)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See `public/models/README.md` for export and sourcing notes.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Brand
+Monochrome system — near-black `#0b0f1a`, paper `#ffffff`, no chromatic accent. The 3D scene supplies all "color" via emissive lighting.
