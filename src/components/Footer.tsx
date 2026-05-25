@@ -1,42 +1,79 @@
+"use client";
+
+const NAVIGATION = [
+  { label: "Home", href: "#top" },
+  { label: "Capabilities", href: "#capabilities" },
+  { label: "Technology", href: "#technology" },
+  { label: "Engagement", href: "#engagement" },
+  { label: "Values", href: "#values" },
+  { label: "Contact", href: "#contact" },
+];
+
+const LEGAL = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Cookie Policy", href: "/cookies" },
+  { label: "Disclaimer", href: "/disclaimer" },
+];
+
 export default function Footer() {
   return (
     <footer className="bg-ink-2 border-t border-rule">
-      <div className="mx-auto max-w-[1400px] px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="flex items-center gap-3">
-          <span className="block h-2 w-2 rounded-full bg-foreground" />
-          <span className="font-mono text-sm tracking-[0.22em] uppercase text-foreground">
-            Ionous
-          </span>
-          <span className="text-muted text-xs">© {new Date().getFullYear()}</span>
+      <div className="mx-auto max-w-[1400px] px-6 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr] gap-12 lg:gap-16">
+          <div>
+            <div className="font-mono text-base tracking-[0.22em] uppercase text-foreground mb-4">
+              ionous.ai
+            </div>
+            <p className="text-sm text-foreground/65 leading-relaxed max-w-sm">
+              Infrastructure and software consultancy for enterprise space and
+              warfighting organizations.
+            </p>
+          </div>
+
+          <FooterColumn title="Navigation" items={NAVIGATION} />
+          <FooterColumn title="Legal" items={LEGAL} />
         </div>
-        <ul className="flex items-center gap-6 text-xs text-muted">
-          <li>
-            <a href="#capabilities" className="hover:text-foreground transition-colors">
-              Capabilities
-            </a>
-          </li>
-          <li>
-            <a href="#engagement" className="hover:text-foreground transition-colors">
-              Engagement
-            </a>
-          </li>
-          <li>
-            <a href="#contact" className="hover:text-foreground transition-colors">
-              Contact
-            </a>
-          </li>
-          <li>
-            <a href="/privacy" className="hover:text-foreground transition-colors">
-              Privacy
-            </a>
-          </li>
-          <li>
-            <a href="/terms" className="hover:text-foreground transition-colors">
-              Terms
-            </a>
-          </li>
-        </ul>
+
+        <div className="mt-14 pt-8 border-t border-rule flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <p className="text-xs text-muted">
+            © {new Date().getFullYear()} ionous.ai. All rights reserved.
+          </p>
+          <a
+            href="#top"
+            aria-label="Back to top"
+            className="inline-flex h-9 w-9 items-center justify-center border border-rule rounded-md text-foreground/70 hover:text-foreground hover:border-foreground/40 transition-colors"
+          >
+            <span aria-hidden>↑</span>
+          </a>
+        </div>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({
+  title,
+  items,
+}: {
+  title: string;
+  items: { label: string; href: string }[];
+}) {
+  return (
+    <div>
+      <div className="eyebrow mb-5">{title}</div>
+      <ul className="flex flex-col gap-3">
+        {items.map((item) => (
+          <li key={item.href}>
+            <a
+              href={item.href}
+              className="text-sm text-foreground/75 hover:text-foreground transition-colors"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
