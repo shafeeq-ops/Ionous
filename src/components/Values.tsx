@@ -68,11 +68,11 @@ export default function Values() {
   );
 
   return (
-    <section ref={sectionRef} id="values" className="bg-ink relative">
+    <section ref={sectionRef} id="values" className="section-paper relative">
       <div className="mx-auto max-w-[1400px] px-6 py-28 md:py-36">
-        <div className="border-b border-rule pb-10 mb-12">
+        <div className="border-b border-rule-light pb-10 mb-12">
           <div className="eyebrow mb-4">Values</div>
-          <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-foreground max-w-4xl">
+          <h2 className="text-4xl md:text-6xl font-medium tracking-tight max-w-4xl">
             What Makes Ionous Different.
           </h2>
         </div>
@@ -82,31 +82,31 @@ export default function Values() {
             <div
               key={v.num}
               data-value-card
-              className="group relative flex flex-col border-t border-rule pt-8 pl-4 -ml-4 pr-4 rounded-sm transition-colors duration-300 hover:bg-white/[0.025]"
+              className="group relative flex flex-col border-t border-rule-light pt-8 pl-4 -ml-4 pr-4 rounded-sm transition-colors duration-300 hover:bg-black/[0.025]"
             >
               <span
                 aria-hidden
-                className="absolute left-0 top-0 h-px w-0 bg-foreground transition-[width] duration-500 ease-out group-hover:w-16"
+                className="absolute left-0 top-0 h-px w-0 bg-foreground-on-paper transition-[width] duration-500 ease-out group-hover:w-16"
               />
-              <div className="text-4xl md:text-5xl font-medium tracking-tight text-muted mb-6 tabular-nums">
+              <div className="text-4xl md:text-5xl font-medium tracking-tight text-muted-on-paper mb-6 tabular-nums">
                 {v.num}
               </div>
-              <h3 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground">
+              <h3 className="text-2xl md:text-3xl font-medium tracking-tight">
                 {v.title}
               </h3>
-              <p className="mt-4 text-foreground/70 leading-relaxed max-w-xl">
+              <p className="mt-4 text-foreground-on-paper/75 leading-relaxed max-w-xl">
                 {v.body}
               </p>
             </div>
           ))}
         </div>
 
-        <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-rule pt-10">
+        <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-rule-light pt-10">
           {BULLETS.map((b) => (
             <li
               key={b}
               data-value-bullet
-              className="text-sm md:text-base text-muted leading-relaxed"
+              className="text-sm md:text-base text-muted-on-paper leading-relaxed"
             >
               <span className="ornament" />
               {b}
