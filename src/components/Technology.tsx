@@ -1,3 +1,14 @@
+"use client";
+
+import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
+
 const PILLARS = [
   {
     eyebrow: "Layer 01",
@@ -17,8 +28,26 @@ const PILLARS = [
 ];
 
 export default function Technology() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      ScrollTrigger.batch("[data-tech-card]", {
+        start: "top 85%",
+        once: true,
+        onEnter: (batch) =>
+          gsap.fromTo(
+            batch,
+            { opacity: 0, y: 24 },
+            { opacity: 1, y: 0, stagger: 0.08, duration: 0.6, ease: "power2.out" },
+          ),
+      });
+    },
+    { scope: sectionRef },
+  );
+
   return (
-    <section id="technology" className="bg-ink relative">
+    <section ref={sectionRef} id="technology" className="bg-ink relative">
       <div className="mx-auto max-w-[1400px] px-6 py-28 md:py-36">
         <div className="border-b border-rule pb-10 mb-12">
           <div className="eyebrow mb-4">Technology</div>
@@ -29,7 +58,15 @@ export default function Technology() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14">
           {PILLARS.map((p) => (
-            <div key={p.title} className="flex flex-col border-t border-rule pt-8">
+            <div
+              key={p.title}
+              data-tech-card
+              className="group relative flex flex-col border-t border-rule pt-8 pl-4 -ml-4 pr-4 rounded-sm transition-colors duration-300 hover:bg-white/[0.025]"
+            >
+              <span
+                aria-hidden
+                className="absolute left-0 top-0 h-px w-0 bg-foreground transition-[width] duration-500 ease-out group-hover:w-16"
+              />
               <div className="eyebrow mb-5">{p.eyebrow}</div>
               <h3 className="text-2xl md:text-3xl font-medium tracking-tight leading-tight">
                 {p.title}
