@@ -48,6 +48,15 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="fetch"
+          href="/models/mission-systems.glb"
+          crossOrigin="anonymous"
+          type="model/gltf-binary"
+        />
+      </head>
       <body className="grain min-h-full flex flex-col">
         <SmoothScroll />
         {children}

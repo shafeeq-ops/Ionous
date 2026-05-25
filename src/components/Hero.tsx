@@ -1,16 +1,32 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import dynamic from "next/dynamic";
 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
+
+type IdleWindow = Window & {
+  requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
 
 export default function Hero() {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   const eyebrowRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const [showScene, setShowScene] = useState(false);
+
+  useEffect(() => {
+    const w = window as IdleWindow;
+    if (w.requestIdleCallback) {
+      const handle = w.requestIdleCallback(() => setShowScene(true), { timeout: 1500 });
+      return () => w.cancelIdleCallback?.(handle);
+    }
+    const t = window.setTimeout(() => setShowScene(true), 200);
+    return () => window.clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -47,8 +63,11 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[100svh] overflow-hidden hero-vignette">
-      <div className="absolute inset-0 z-0">
-        <Scene variant="hero" />
+      <div
+        className={`absolute inset-0 z-0 transition-opacity duration-700 ${showScene ? "opacity-100" : "opacity-0"}`}
+        aria-hidden
+      >
+        {showScene && <Scene variant="hero" />}
       </div>
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-ink/30 to-ink pointer-events-none" />
       <div className="relative z-20 mx-auto flex min-h-[100svh] max-w-[1400px] flex-col justify-end px-6 pb-24 pt-32">
