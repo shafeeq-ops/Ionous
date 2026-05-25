@@ -17,7 +17,10 @@ type Props = {
   position?: [number, number, number];
   scale?: number;
   interactive?: boolean;
+  scrollProgressRef?: React.MutableRefObject<number>;
 };
+
+useGLTF.preload("/models/mission-systems.glb", true, true);
 
 function hasModel(slug: ServiceSlug): boolean {
   if (typeof window === "undefined") return false;
@@ -33,9 +36,19 @@ function setModelCache(slug: ServiceSlug, exists: boolean) {
 }
 
 function GLTFModel({ slug }: { slug: ServiceSlug }) {
-  const { scene } = useGLTF(`/models/${slug}.glb`);
+  const { scene } = useGLTF(`/models/${slug}.glb`, true, true);
   const cloned = useMemo(() => scene.clone(true), [scene]);
   useEffect(() => {
+    const box = new THREE.Box3().setFromObject(cloned);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+    const longestAxis = Math.max(size.x, size.y, size.z);
+    const targetSize = 2;
+    const fit = longestAxis > 0 ? targetSize / longestAxis : 1;
+    cloned.position.sub(center).multiplyScalar(fit);
+    cloned.scale.setScalar(fit);
     cloned.traverse((obj) => {
       if ((obj as THREE.Mesh).isMesh) {
         const mesh = obj as THREE.Mesh;
@@ -131,7 +144,7 @@ function OrbitalNodes() {
   );
 }
 
-export default function ServiceModel({ slug, position = [0, 0, 0], scale = 1, interactive = false }: Props) {
+export default function ServiceModel({ slug, position = [0, 0, 0], scale = 1, interactive = false, scrollProgressRef }: Props) {
   const wrap = useRef<THREE.Group>(null);
   const [modelExists, setModelExists] = useState<boolean | null>(() =>
     hasModel(slug) ? true : null,
@@ -176,6 +189,10 @@ export default function ServiceModel({ slug, position = [0, 0, 0], scale = 1, in
 
   useFrame((_, dt) => {
     if (!wrap.current) return;
+    if (interactive && scrollProgressRef) {
+      wrap.current.rotation.y = scrollProgressRef.current * Math.PI * 2;
+      return;
+    }
     const speed = hovered && interactive ? 1.2 : 0.3;
     wrap.current.rotation.y += dt * speed;
   });

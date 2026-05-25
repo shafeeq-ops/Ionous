@@ -1,10 +1,9 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Float, Stars } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette, ChromaticAberration } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useRef } from "react";
 import ServiceModel, { type ServiceSlug } from "./ServiceModel";
@@ -14,6 +13,7 @@ type Variant = "hero" | "service";
 type SceneProps = {
   variant: Variant;
   slug?: ServiceSlug;
+  scrollProgressRef?: React.MutableRefObject<number>;
 };
 
 function Particles({ count = 220 }: { count?: number }) {
@@ -52,13 +52,28 @@ function Particles({ count = 220 }: { count?: number }) {
   );
 }
 
-export default function Scene({ variant, slug }: SceneProps) {
+export default function Scene({ variant, slug, scrollProgressRef }: SceneProps) {
   const isHero = variant === "hero";
   const cameraPos: [number, number, number] = isHero ? [0, 0.2, 6] : [0, 0.4, 3.6];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { rootMargin: "200px 0px", threshold: 0 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
+    <div ref={containerRef} className="w-full h-full">
     <Canvas
-      dpr={[1, 1.75]}
+      frameloop={visible ? "always" : "never"}
+      dpr={[1, 1.5]}
       camera={{ position: cameraPos, fov: 38 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
     >
@@ -72,8 +87,8 @@ export default function Scene({ variant, slug }: SceneProps) {
       <Suspense fallback={null}>
         {isHero ? (
           <>
-            <Particles count={260} />
-            <Stars radius={50} depth={30} count={1200} factor={2} fade speed={0.4} />
+            <Particles count={150} />
+            <Stars radius={50} depth={30} count={600} factor={2} fade speed={0.4} />
             <Float floatIntensity={1.1} rotationIntensity={0.6} speed={1.2}>
               <ServiceModel slug="space-infrastructure" position={[-2.4, 0.6, -1]} scale={0.85} />
             </Float>
@@ -88,7 +103,12 @@ export default function Scene({ variant, slug }: SceneProps) {
             </Float>
           </>
         ) : (
-          <ServiceModel slug={slug ?? "space-infrastructure"} interactive scale={1.1} />
+          <ServiceModel
+            slug={slug ?? "space-infrastructure"}
+            interactive
+            scale={1.1}
+            scrollProgressRef={scrollProgressRef}
+          />
         )}
       </Suspense>
 
@@ -96,7 +116,7 @@ export default function Scene({ variant, slug }: SceneProps) {
         <OrbitControls
           enableZoom={false}
           enablePan={false}
-          autoRotate
+          autoRotate={!scrollProgressRef}
           autoRotateSpeed={0.6}
           minPolarAngle={Math.PI / 2.6}
           maxPolarAngle={Math.PI / 1.8}
@@ -106,15 +126,10 @@ export default function Scene({ variant, slug }: SceneProps) {
       {isHero && (
         <EffectComposer enableNormalPass={false}>
           <Bloom intensity={0.45} luminanceThreshold={0.82} luminanceSmoothing={0.3} mipmapBlur />
-          <ChromaticAberration
-            blendFunction={BlendFunction.NORMAL}
-            offset={new THREE.Vector2(0.0006, 0.0006)}
-            radialModulation={false}
-            modulationOffset={0}
-          />
           <Vignette eskil={false} offset={0.3} darkness={0.55} />
         </EffectComposer>
       )}
     </Canvas>
+    </div>
   );
 }

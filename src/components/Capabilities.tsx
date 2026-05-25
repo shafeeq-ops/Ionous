@@ -1,11 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import type { ServiceSlug } from "./ServiceModel";
 
 const Scene = dynamic(() => import("./Scene"), { ssr: false });
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 type Capability = {
   slug: ServiceSlug;
@@ -43,21 +49,43 @@ const CAPABILITIES: Capability[] = [
 
 export default function Capabilities() {
   const [activeSlug, setActiveSlug] = useState<ServiceSlug>(CAPABILITIES[0].slug);
+  const sectionRef = useRef<HTMLElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
+  const scrollProgressRef = useRef(0);
 
-  useEffect(() => {
-    if (!detailRef.current) return;
-    gsap.fromTo(
-      detailRef.current,
-      { opacity: 0, y: 8 },
-      { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
-    );
-  }, [activeSlug]);
+  useGSAP(
+    () => {
+      if (detailRef.current) {
+        gsap.fromTo(
+          detailRef.current,
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+        );
+      }
+    },
+    { scope: sectionRef, dependencies: [activeSlug] },
+  );
+
+  useGSAP(
+    () => {
+      if (!sectionRef.current) return;
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 0.5,
+        onUpdate: (self) => {
+          scrollProgressRef.current = self.progress;
+        },
+      });
+    },
+    { scope: sectionRef },
+  );
 
   const active = CAPABILITIES.find((c) => c.slug === activeSlug) ?? CAPABILITIES[0];
 
   return (
-    <section id="capabilities" className="section-paper relative">
+    <section ref={sectionRef} id="capabilities" className="section-paper relative">
       <div className="mx-auto max-w-[1400px] px-6 py-28 md:py-36">
         <div className="border-b border-rule-light pb-10 mb-12">
           <div className="eyebrow mb-4">Capabilities</div>
@@ -92,7 +120,7 @@ export default function Capabilities() {
 
           <div ref={detailRef} className="flex flex-col gap-8">
             <div className="aspect-[4/3] w-full rounded-sm overflow-hidden bg-ink relative">
-              <Scene variant="service" slug={active.slug} />
+              <Scene variant="service" slug={active.slug} scrollProgressRef={scrollProgressRef} />
               <div className="absolute top-4 left-4 eyebrow text-foreground/80">
                 {active.label.replace(/\s/g, " · ").toUpperCase()}
               </div>
