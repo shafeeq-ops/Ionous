@@ -1,4 +1,4 @@
-# Ionous
+# Ionous - https://ionous-seven.vercel.app/
 
 Marketing site for Ionous — infrastructure and software consultancy for enterprise space companies and warfighting organizations.
 
@@ -24,7 +24,7 @@ npm start
 ```
 
 ## Deploy (Vercel)
-Pushes to `main` auto-deploy production at https://ionous.vercel.app (and ionous.com once DNS resolves). Pushes to any other branch (`stg`, feature branches) create unique preview URLs.
+Pushes to `main` auto-deploy production at (https://ionous-seven.vercel.app/)(and ionous.com once DNS resolves). Pushes to any other branch (`stg`, feature branches) create unique preview URLs.
 
 Manual deploy from CLI is still available:
 ```bash
