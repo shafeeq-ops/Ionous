@@ -4,6 +4,8 @@ import { useState } from "react";
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   return (
     <section id="contact" className="bg-ink relative">
@@ -29,23 +31,33 @@ export default function Contact() {
           </div>
         ) : (
           <form
-            name="briefing"
-            method="POST"
-            data-netlify="true"
-            data-netlify-honeypot="bot-field"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
+              setError(null);
+              setSubmitting(true);
               const form = e.currentTarget;
               const data = new FormData(form);
-              fetch("/", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
-              }).finally(() => setSubmitted(true));
+              const payload = Object.fromEntries(data.entries());
+              try {
+                const res = await fetch("/api/contact", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(payload),
+                });
+                const json = (await res.json()) as { ok: boolean; error?: string };
+                if (!json.ok) {
+                  setError(json.error ?? "Something went wrong. Please try again.");
+                  return;
+                }
+                setSubmitted(true);
+              } catch {
+                setError("Network error. Please try again.");
+              } finally {
+                setSubmitting(false);
+              }
             }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl"
           >
-            <input type="hidden" name="form-name" value="briefing" />
             <p className="hidden">
               <label>
                 Don&apos;t fill this out: <input name="bot-field" />
@@ -61,11 +73,17 @@ export default function Contact() {
               className="md:col-span-2"
               placeholder="Space operations, C2 integration, software modernization..."
             />
+            {error && (
+              <p className="md:col-span-2 text-sm text-red-400" role="alert">
+                {error}
+              </p>
+            )}
             <button
               type="submit"
-              className="md:col-span-2 inline-flex h-12 w-fit items-center rounded-full bg-foreground px-6 text-sm font-medium text-ink hover:bg-foreground/85 transition-colors"
+              disabled={submitting}
+              className="md:col-span-2 inline-flex h-12 w-fit items-center rounded-full bg-foreground px-6 text-sm font-medium text-ink hover:bg-foreground/85 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Submit Briefing Request
+              {submitting ? "Sending…" : "Submit Briefing Request"}
               <span aria-hidden className="ml-2">→</span>
             </button>
           </form>
